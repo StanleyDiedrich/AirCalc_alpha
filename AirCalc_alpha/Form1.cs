@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -16,16 +17,19 @@ namespace AirCalc_alpha
     public partial class Form1 : System.Windows.Forms.Form
     {
         Document Doc;
-        string s_system = "";
+        public SelectedSystem _selectedSystem { get; set; }
         public Form1(Document document)
         {
             Doc = document;
             InitializeComponent();
-        }
+            
 
+        }
+        
         private void systembox_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            SelectedSystem SelectedSystem = new SelectedSystem();
+            _selectedSystem = SelectedSystem;
             IList<string> systemnames = new List<string>();
             IList<Element> ducts = new FilteredElementCollector(Doc).OfCategory(BuiltInCategory.OST_DuctCurves).WhereElementIsNotElementType().ToElements();
             foreach (Element duct in ducts)
@@ -41,7 +45,10 @@ namespace AirCalc_alpha
             {
                 if (system == selectedsystem)
                 {
-                    s_system = system;
+
+                     _selectedSystem.selectedSystem = selectedsystem;
+                    
+                    
                 }
             }
             
@@ -49,6 +56,7 @@ namespace AirCalc_alpha
 
         private void calc_button_Click(object sender, EventArgs e)
         {
+            this.Close();
         }
 
         private void Form1_Load(object sender, EventArgs e)
