@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34031.279
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AirCalc_alpha", "AirCalc_alpha\AirCalc_alpha.csproj", "{90292622-D987-4BB4-AD04-40B2372BB02A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{90292622-D987-4BB4-AD04-40B2372BB02A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90292622-D987-4BB4-AD04-40B2372BB02A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90292622-D987-4BB4-AD04-40B2372BB02A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90292622-D987-4BB4-AD04-40B2372BB02A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {64C9CF48-05CA-4948-8B11-10D51C5495AB}
+	EndGlobalSection
+EndGlobal
