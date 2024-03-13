@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Mechanical;
 using Autodesk.Revit.DB.Plumbing;
+using Autodesk.Revit.DB.Structure;
 using Autodesk.Revit.UI;
 
 namespace AirCalc_alpha
@@ -90,6 +91,11 @@ namespace AirCalc_alpha
                         Duct pipe = element as Duct;
                         connectorSet = pipe.ConnectorManager.Connectors;
                     }
+                if (element is FlexDuct)
+                {
+                    FlexDuct pipe = element as FlexDuct;
+                    connectorSet = pipe.ConnectorManager.Connectors;
+                }
 
                 foreach (Connector connector in connectorSet)
                 {
@@ -130,16 +136,36 @@ namespace AirCalc_alpha
                                     { continue; }
                                    
                                 }
+                                
 
                             }
-                            
-                            else
+                             if (systemtype == "ExhaustAir")
                             {
                                 if (nextconnector.Direction is FlowDirectionType.In)
                                 {
                                     foundedelementId = nextconnector.Owner.Id;
                                 }
-                            }
+                                else if (nextconnector.Direction is FlowDirectionType.Bidirectional)
+                                {
+                                    if (!nextconnector.Owner.Id.Equals(ownerId) || !foundedelements.Contains(nextconnector.Owner.Id))
+                                    {
+                                        foundedelementId = nextconnector.Owner.Id;
+                                    }
+                                    else
+                                    { continue; }
+
+                                }
+                               
+
+                            }    
+                            
+                           /* else
+                            {
+                                if (nextconnector.Direction is FlowDirectionType.In)
+                                {
+                                    foundedelementId = nextconnector.Owner.Id;
+                                }
+                            }*/
                             
 
                         }
@@ -384,7 +410,11 @@ namespace AirCalc_alpha
 
 
 
-
+            int number = 1;
+            string letter = "";
+            
+            double prev_area = 0;
+            double prev_flow = 0;
 
             foreach (var foundedelement2 in foundedelements)
             {
@@ -392,34 +422,100 @@ namespace AirCalc_alpha
                 if (foundedelement2 != null)
                 {
                     Element element = doc.GetElement(foundedelement2);
+                    if (foundedelement2== foundedelements.First())
+                    {
+                        letter = "_a";
+                    }
+                    else
+                    {
+                        letter = "";
+                    }
                     if (element is FamilyInstance)
                     {
                         FamilyInstance familyInstance = element as FamilyInstance;
+                        MEPModel mepmodel = familyInstance.MEPModel;
+                        ConnectorSet connectorSet = mepmodel.ConnectorManager.Connectors;
+                        double area = 0;
+                        double flow = 0;
+                        foreach (Connector connector in connectorSet)
+                        {
+                           
+                            if (connector.Shape == ConnectorProfileType.Round)
+                            {
+                                area = Math.PI*Math.Pow(connector.Radius,2);
+                                flow = connector.Flow;
+                            }
+                            else
+                            {
+                                area = connector.Width*connector.Height;
+                                flow = connector.Flow;
+                            }
+                            
+                            
+
+                        }
+                        if (prev_area != area || prev_flow != flow)
+                        {
+                            number++;
+                            prev_area = area;
+                            prev_flow = flow;
+
+                        }
+                        string resstring = $"{selectedsystem.selectedSystem}_MainWay_{number}_{letter}";
 
                         using (Transaction t = new Transaction(doc, "MainBranch"))
                         {
                             try
                             {
                                 t.Start();
-                                familyInstance.LookupParameter("ADSK_Примечание").Set("MainWay");
+                                
+                                familyInstance.LookupParameter("ADSK_Примечание").Set(resstring);
                                 t.Commit();
                             }
                             catch (Exception ex)
                             {
-                                continue;
+                                
                             }
                         }
                     }
                     if (element is Duct)
                     {
                         Duct familyInstance = element as Duct;
+                        
+                        ConnectorSet connectorSet = familyInstance.ConnectorManager.Connectors;
+                        double area = 0;
+                        double flow = 0;
+                        foreach (Connector connector in connectorSet)
+                        {
+                            
+                            if (connector.Shape == ConnectorProfileType.Round)
+                            {
+                                area = Math.PI * Math.Pow(connector.Radius, 2);
+                                flow = connector.Flow;
+                            }
+                            else
+                            {
+                                area = connector.Width * connector.Height;
+                                flow = connector.Flow;
+                            }
+                           
 
-                        using (Transaction t = new Transaction(doc, "MainBranch"))
+                        }
+                        if (prev_area != area || prev_flow != flow)
+                        {
+                            number++;
+                            prev_area = area;
+                            prev_flow = flow;
+
+                        }
+                        string resstring = $"{selectedsystem.selectedSystem}_MainWay_{number}{letter}";
+
+                        using (Transaction t = new Transaction(doc,  $"MainBranch"))
                         {
                             try
                             {
                                 t.Start();
-                                familyInstance.LookupParameter("ADSK_Примечание").Set("MainWay");
+                                familyInstance.LookupParameter("ADSK_Примечание").Set(resstring);
                                 t.Commit();
                             }
                             catch (Exception ex)
