@@ -410,7 +410,7 @@ namespace AirCalc_alpha
 
 
 
-            int number = 1;
+            int number = 0;
             string letter = "";
             
             double prev_area = 0;
